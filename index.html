@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <title>Format your address</title>
+  <style>
+    body{
+      padding:50px;
+      margin: 5px;
+    }
+  </style>
+</head>
+<body>
+ 
+    <!-- Material form register -->
+<div class="card">
+
+  <h5 class="card-header bg-primary white-text text-center py-4">
+      <strong>Enter your Details</strong>
+  </h5>
+<br>
+  <!--Card content-->
+  <div class="card-body px-lg-5 pt-0">
+
+      <!-- Form -->  
+      <form id="location-form" class="text-center" style="color: #757575;" action="#!">
+
+          <div class="form-row">
+              <div class="col">
+                  <!-- First name -->
+                  <div class="md-form">
+                      <input type="text" id="materialRegisterFormFirstName" class="form-control">
+                      <label for="materialRegisterFormFirstName">First name</label>
+                  </div>
+              </div>
+              <div class="col">
+                  <!-- Last name -->
+                  <div class="md-form">
+                      <input type="text" id="materialRegisterFormLastName" class="form-control">
+                      <label for="materialRegisterFormLastName">Last name</label>
+                  </div>
+              </div>
+          </div>
+
+          <!-- E-mail -->
+          <div class="md-form mt-0">
+              <input type="email" id="materialRegisterFormEmail" class="form-control">
+              <label for="materialRegisterFormEmail">E-mail</label>
+          </div>
+
+         
+
+          <!-- Phone number -->
+          <div class="md-form">
+              <input type="number" id="materialRegisterFormPhone" class="form-control" aria-describedby="materialRegisterFormPhoneHelpBlock">
+              <label for="materialRegisterFormPhone">Phone number</label>
+              <small id="materialRegisterFormPhoneHelpBlock" class="form-text text-muted mb-4">
+                  Optional - for two step authentication
+              </small>
+          </div>
+           <!-- Address-->
+           <div class="md-form mt-0">
+            <input type="text" id="house" class="form-control">
+            <label for="materialRegisterFormEmail">House/Building/apartment</label>
+        </div>
+
+        <div class="md-form mt-0">
+          <input type="text" id="street" class="form-control">
+          <label for="materialRegisterFormEmail">Street/Road/Lane</label>
+      </div>
+      <div class="md-form mt-0">
+        <input type="text" id="area" class="form-control">
+        <label for="materialRegisterFormEmail">Area/Locality/Sector</label>
+    </div>
+    <div class="md-form mt-0">
+      <input type="text" id="landmark" class="form-control">
+      <label for="materialRegisterFormEmail">Landmark</label>
+  </div>
+  <div class="md-form mt-0">
+    <input type="text" id="village" class="form-control">
+    <label for="materialRegisterFormEmail">Village/Town/City</label>
+</div>
+<div class="md-form mt-0">
+  <input type="number" id="pin" class="form-control">
+  <label for="materialRegisterFormEmail">pincode</label>
+</div>
+<div class="md-form mt-0">
+  <input type="text" id="sub" class="form-control">
+  <label for="materialRegisterFormEmail">Sub district</label>
+</div>
+<div class="md-form mt-0">
+  <input type="text" id="district" class="form-control">
+  <label for="materialRegisterFormEmail">district</label>
+</div>
+<div class="md-form mt-0">
+  <input type="text" id="state" class="form-control">
+  <label for="materialRegisterFormEmail">State</label>
+</div>
+
+
+          <!-- <input type="text" id="location-input" class="form-control form-control-lg">
+          
+          <label for="materialRegisterFormLastName">Address</label>
+          <br>-->
+          <button type="submit" class="btn btn-primary btn-block">Submit</button>
+        </form>
+       
+      <!-- Form -->
+
+
+<!-- Material form register -->
+ 
+   
+    <div class="card-block" id="formatted-address"></div>
+    <div class="card-block" id="address-components"></div>
+    <div class="card-block" id="geometry"></div>
+  </div>
+
+</div>
+  <script>
+    // Call Geocode
+    //geocode();
+
+    // Get location form
+    var locationForm = document.getElementById('location-form');
+
+    // Listen for submit
+    locationForm.addEventListener('submit', geocode);
+
+    function geocode(e){
+      // Prevent actual submit
+      e.preventDefault();
+      var house=document.getElementById('house').value;
+     var street= document.getElementById('street').value;
+     var area= document.getElementById('area').value;
+     var landmark= document.getElementById('landmark').value;
+     var village= document.getElementById('village').value;
+     var pin= document.getElementById('pin').value;
+     var sub= document.getElementById('sub').value;
+     var district= document.getElementById('district').value;
+     var state= document.getElementById('state').value;
+    var location=house+ " " +street+ " " +area+" "+landmark+" "+village+" "+pin+" "+sub+" "+district+" "+state;
+     // var location = document.getElementById('location-input').value;
+
+      axios.get('https://maps.googleapis.com/maps/api/geocode/json',{
+        params:{
+          address:location,
+          key:'MY_API_KEY'
+        }
+      })
+      .then(function(response){
+        // Log full response
+        console.log(response);
+
+        // Formatted Address
+        var formattedAddress = response.data.results[1].formatted_address;
+        var formattedAddressOutput = `
+          <ul class="list-group">
+            <li class="list-group-item">${formattedAddress}</li>
+          </ul>
+        `;
+
+        // Address Components
+        var addressComponents = response.data.results[0].address_components;
+        var addressComponentsOutput = '<ul class="list-group">';
+        for(var i = 0;i < addressComponents.length;i++){
+          addressComponentsOutput += `
+            <li class="list-group-item"><strong>${addressComponents[i].types[0]}</strong>: ${addressComponents[i].long_name}</li>
+          `;
+        }
+        addressComponentsOutput += '</ul>';
+
+        // Geometry
+        var lat = response.data.results[0].geometry.location.lat;
+        var lng = response.data.results[0].geometry.location.lng;
+        var geometryOutput = `
+          <ul class="list-group">
+            <li class="list-group-item"><strong>Latitude</strong>: ${lat}</li>
+            <li class="list-group-item"><strong>Longitude</strong>: ${lng}</li>
+          </ul>
+        `;
+
+        // Output to app
+        document.getElementById('formatted-address').innerHTML = formattedAddressOutput;
+        document.getElementById('address-components').innerHTML = addressComponentsOutput;
+        document.getElementById('geometry').innerHTML = geometryOutput;
+      })
+      .catch(function(error){
+        console.log(error);
+      });
+    }
+  </script>
+</body>
+</html>
